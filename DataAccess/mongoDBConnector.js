@@ -1,9 +1,10 @@
 const MongoClient = require('mongodb').MongoClient;
 const testDataSeeder = require('./testDataSeeder');
 const Q = require('q');
+var databaseConnection = undefined;
 
 exports.connect = config => {
-
+console.log(config);
   if (!!config) {
     if (!!config.db) {
       MongoClient.connect(config.db, (err, db) => {

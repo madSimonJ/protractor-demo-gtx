@@ -676,7 +676,7 @@ const pieces = [{
 
 
 
-exports.reseedDatabase = databaseConnection {
+exports.reseedDatabase = databaseConnection => {
   console.log('reseeding database');
 
   databaseConnection.collection('book').remove();

@@ -1,5 +1,5 @@
 const pieceRepository = require('../DataAccess/repositories/pieceRepository');
-const routeResponses = require('../routes/repositories/routeResponses');
+const routeResponses = require('../ExpressApp/Routes/routeResponses');
 
 exports.handlePieceGetRequest = (req, res) => {
   let query = {

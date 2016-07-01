@@ -1,6 +1,6 @@
 const examRepository = require('../DataAccess/repositories/examRepository');
 const pieceRepository = require('../DataAccess/repositories/pieceRepository');
-const routeResponses = require('../DataAccess/repositories/routeResponses');
+const routeResponses = require('../ExpressApp/Routes/routeResponses');
 const q = require('q');
 const _ = require('lodash');
 
@@ -32,7 +32,7 @@ exports.handleExamGetRequest = (req, res) => {
       .then(data => {
         let examData = data;
         let listOfIds = _.union(data.lists.A, data.lists.B, data.lists.C);
-        pieceRepository.getPieceList(listOfIds);
+        pieceRepository.getPieceList(listOfIds)
           .then(data => {
             let pieceData = data;
             examData.lists.A = joinObjectResults(examData.lists.A, pieceData);

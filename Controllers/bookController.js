@@ -1,6 +1,6 @@
 const bookRepository = require('../DataAccess/repositories/bookRepository');
 const pieceRepository = require('../DataAccess/repositories/pieceRepository');
-const routeResponses = require('../DataAccess/repositories/routeResponses');
+const routeResponses = require('../ExpressApp/Routes/routeResponses');
 const _ = require('lodash');
 const q = require('q');
 

@@ -1,5 +1,5 @@
-const db = require('../config/databaseConfig');
-const routeResponses = require('../routes/routeResponses');
+const db = require('../mongoDBConnector');
+const routeResponses = require('../../ExpressApp/Routes/routeResponses');
 const q = require('q');
 
 const pieceCollectionName = 'piece';

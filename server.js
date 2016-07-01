@@ -1,13 +1,8 @@
-const express = require('express');
-const middlewareConfig = require('./ExpressApp/middlewareConfig');
+const env = 'dev';
 
-let app = express();
+const environmentVariables = require('./environmentVariables')[env];
+const expressAppConfiguration = require('./ExpressApp/createExpressApp');
 
-const environmentVariables = require('./server/config/environmentVariablesConfig')[env]
-middlewareConfig(app, environmentVariables);
+let app = expressAppConfiguration.SetUp(environmentVariables);
+expressAppConfiguration.Start(app);
 
-app.get('*', (req, res) => {
-    res.sendStatus(200);
-});
-
-app.listen(8080);
