@@ -13,4 +13,4 @@
 # TECHNOLOGY COLOPHON
 
     CSS3, HTML5
-    NodeJS, Angular1, Webpack, Modernizr, Normalize.css
+    NodeJS, React, Modernizr, Normalize.css

@@ -5,6 +5,7 @@ import pug from 'gulp-pug';
 import stylus from 'gulp-stylus';
 import cleanCSS from 'gulp-clean-css';
 import sourcemaps from 'gulp-sourcemaps';
+import mocha from 'gulp-mocha';
 
 gulp.task('copy', ['copy-and-minimise-css'], () => {    
   gulp.src(['./node_modules/bootstrap/dist/css/bootstrap.min*', './node_modules/toastr/build/toastr.min.css*'])  
@@ -45,9 +46,7 @@ gulp.task('webpack-angular1', () => {
    
     let entryFile = path.join(__dirname, 'AngularApp', 'app.js');
     let outputPath = path.join(__dirname, 'Build', 'Angular1', 'js');
-    console.log(`inputFile = ${entryFile}`);
-    console.log(`output path = ${outputPath}`);
-    
+
     webpack({
       devtool: 'inline-source-map',
       entry: [entryFile],
@@ -73,8 +72,15 @@ gulp.task('webpack-angular1', () => {
             console.log(`stats = ${stats}`);
         }
     });
+});
+
+gulp.task('test', () => {
+   
+    return gulp.src(['specs/**/*.js'])
+    .pipe(mocha({reporter: 'nyan'}));
     
 });
+
 
 gulp.task('build', ['copy', 'compile-stylus-templates', 'build-apps'], () => {
   // return gulp.src('./output/index.htm')

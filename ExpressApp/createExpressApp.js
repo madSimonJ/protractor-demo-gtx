@@ -16,13 +16,12 @@ module.exports.SetUp = environmentVariables => {
     ConfigureAngular1Routes(app);
     app.get('*', (req, res) => {
         res.sendStatus(404);
-    });    
+    });
     
     return app;
 };
 
 module.exports.Start = app => {
-    
     dbConfig.connect(env);
     app.listen(8080);
 };
