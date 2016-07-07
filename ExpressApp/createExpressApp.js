@@ -1,6 +1,7 @@
 const express = require('express');
 const middlewareConfig = require('./configureMiddleware');
-const routeConfig = require('./Routes/configureApiRoutes');
+const ConfigureApiRoutes = require('./Routes/configureApiRoutes');
+const ConfigureAngular1Routes = require('./Routes/configureRoutes');
 const dbConfig = require('../DataAccess/mongoDBConnector');
 
 var env;
@@ -11,17 +12,17 @@ module.exports.SetUp = environmentVariables => {
     env = environmentVariables;
     middlewareConfig(app, env);
     
-    routeConfig.ConfigureApiRoutes(app);
-    
+    ConfigureApiRoutes(app);
+    ConfigureAngular1Routes(app);
     app.get('*', (req, res) => {
-        res.sendStatus(200);
+        res.sendStatus(404);
     });    
     
     return app;
-}
+};
 
 module.exports.Start = app => {
     
     dbConfig.connect(env);
     app.listen(8080);
-}
+};

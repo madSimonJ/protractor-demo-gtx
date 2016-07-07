@@ -4,7 +4,19 @@ const routeResponses = require('../ExpressApp/Routes/routeResponses');
 const q = require('q');
 const _ = require('lodash');
 
+
+const joinObjectResults = (list, pieceRecords) => {
+  return _.map(list, pieceId => {
+    let relatedPieceRecord = _.find(pieceRecords, pieceRecord => {
+      return pieceRecord._id === pieceId;
+    });
+    relatedPieceRecord.pieceId = pieceId;
+    return _.omit(relatedPieceRecord, '_id');
+  });
+};
+
 exports.handleExamGetRequest = (req, res) => {
+    console.log('handling exam request...');
   let query = {
     board: req.params.board,
     instrument: req.params.instrument,
@@ -13,16 +25,8 @@ exports.handleExamGetRequest = (req, res) => {
 
   let deferred = q.defer();
   let queryIsValid = true;
-  if (!query.board) {
-    deferred.reject(new Error('There was an issue with the parameters supplied: no board was specified'));
-    queryIsValid = false;
-  } else if (!query.instrument) {
-    deferred.reject(new Error('There was an issue with the parameters supplied: no instrument was specified'));
-    queryIsValid = false;
-  } else if (!query.grade) {
-    deferred.reject(new Error('There was an issue with the parameters supplied: no grade was specified'));
-    queryIsValid = false;
-  } else if (!_.isNumber(query.grade)) {
+
+    if (!!query.grade && !_.isNumber(parseInt(query.grade))) {
     deferred.reject(new Error('There was an issue with the parameters supplied: the specified grade was not a number'));
     queryIsValid = false;
   }
@@ -31,33 +35,30 @@ exports.handleExamGetRequest = (req, res) => {
     examRepository.getExams(query)
       .then(data => {
         let examData = data;
-        let listOfIds = _.union(data.lists.A, data.lists.B, data.lists.C);
-        pieceRepository.getPieceList(listOfIds)
-          .then(data => {
-            let pieceData = data;
-            examData.lists.A = joinObjectResults(examData.lists.A, pieceData);
-            examData.lists.B = joinObjectResults(examData.lists.B, pieceData);
-            examData.lists.C = joinObjectResults(examData.lists.C, pieceData);
-            deferred.resolve(examData);
-          })
-          .catch(error => {
-            deferred.reject(`An error occured getting piece data: ${error.message}`);
-          });
+        console.log(`data = ${JSON.stringify(data)}`);
+        deferred.resolve(examData);
       })
       .catch(error => {
         deferred.reject(`An error occured getting exam data: ${error.message}`);
-      })
+        console.log(`error2: ${error}`);
+      });
   }
+            
+function getExamDetail(examData, callback) {
+    let listOfIds = _.union(examData.lists.A, examData.lists.B, examData.lists.C);
+    pieceRepository.getPieceList(listOfIds)
+      .then(data => {
+        let pieceData = data;
+        examData.lists.A = joinObjectResults(examData.lists.A, pieceData);
+        examData.lists.B = joinObjectResults(examData.lists.B, pieceData);
+        examData.lists.C = joinObjectResults(examData.lists.C, pieceData);
+        callback(examData, undefined);
+      })
+      .catch(error => {
+        callback(undefined, `An error occured getting piece data: ${error.message}`);
+        console.log(`error: ${error}`);
+      });
+}
 
   routeResponses.SendDocumentIfFound(req, res, deferred.promise);
-}
-
-const joinObjectResults = (list, pieceRecords) => {
-  return _.map(list, pieceId => {
-    let relatedPieceRecord = _.find(pieceRecords, pieceRecord => {
-      return pieceRecord._id == pieceId;
-    });
-    relatedPieceRecord.pieceId = pieceId;
-    return _.omit(relatedPieceRecord, '_id');
-  });
-}
+};

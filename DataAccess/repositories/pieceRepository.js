@@ -4,6 +4,19 @@ const q = require('q');
 
 const pieceCollectionName = 'piece';
 
+const assemblePieceListQuery = listOfIds => {
+  let returnValue = {_id: { $in: listOfIds }};
+  return returnValue;
+};
+
+const assembleSearchQuery = searchParameters => {
+  let returnValue = {};
+  if((!!searchParameters) && (!!searchParameters.pieceid)) {
+      returnValue._id = searchParameters.pieceid;
+  }
+  return returnValue;
+};
+
 exports.getPieces = searchParameters => {
 
   if((!!searchParameters) && (!!searchParameters.pieceid) && (typeof searchParameters.pieceid !== "string")) {
@@ -19,9 +32,8 @@ exports.getPieces = searchParameters => {
     .catch(error => {
       deferred.reject(new Error(`There was an error getting the requested Piece data: ${error.message}`));
     });
-
     return deferred.promise;
-}
+};
 
 exports.getPieceList = listOfIds => {
   let query = assemblePieceListQuery(listOfIds);
@@ -34,17 +46,4 @@ exports.getPieceList = listOfIds => {
       deferred.reject(new Error(`There was an error getting the requested Piece data: ${error.message}`));
     });
     return deferred.promise;
-}
-
-const assemblePieceListQuery = listOfIds => {
-  let returnValue = {_id: { $in: listOfIds }};
-  return returnValue;
-}
-
-const assembleSearchQuery = searchParameters => {
-  let returnValue = {};
-  if((!!searchParameters) && (!!searchParameters.pieceid)) {
-      returnValue._id = searchParameters.pieceid;
-  }
-  return returnValue;
-}
+};

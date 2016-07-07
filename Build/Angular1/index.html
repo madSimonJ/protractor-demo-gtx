@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Ductia</title>
+    <link rel="stylesheet" href="/Angular1/css/normalize.css">
+    <link rel="stylesheet" href="/Angular1/css/main.css">
+    <link rel="stylesheet" href="/Angular1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/Angular1/css/toastr.min.css">
+    <link rel="stylesheet" href="/Angular1/css/ductia.css">
+    <script src="/angular1/js/app.min.js"></script>
+  </head>
+  <body ng-app="ductia">
+    <nav class="navbar navbar-default navbar-inverse navbar-fixed-top" role="navigation">
+      <div id="navbar-header">
+        <div class="navbar-brand">Ductia</div>
+      </div>
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="/angular1">Home</a></li>
+          <li><a href="/angular1/exams">Exams</a></li>
+          <li><a href="/angular1/books">Books</a></li>
+          <li><a href="/angular1/instruments">Instruments</a></li>
+          <li><a href="/angular1/pieces">Pieces</a></li>
+        </ul>
+        <form class="navbar-form navbar-left" role="search">
+          <div class="form-group">
+            <input class="form-control" type="text" placeholder="search">
+          </div>
+        </form>
+      </div>
+    </nav>
+    <section class="content">
+      <div ng-view></div>
+    </section>
+  </body>
+  <footer>&copy2016 Simon J. Painter and Gianluca Cerritelli</footer>
+</html>

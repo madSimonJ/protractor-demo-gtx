@@ -4,6 +4,14 @@ const q = require('q');
 
 const bookCollectionName = 'book';
 
+const assembleQuery = searchParameters => {
+  let returnValue = {};
+  if((!!searchParameters) && (!!searchParameters.isbn)) {
+      returnValue._id = searchParameters.isbn;
+  }
+  return returnValue;
+};
+
 exports.getBooks = searchParameters => {
 
   if((!!searchParameters) && (!!searchParameters.isbn) && (typeof searchParameters.isbn !== 'string')) {
@@ -26,12 +34,4 @@ exports.getBooks = searchParameters => {
     });
 
     return deferred.promise;
-}
-
-const assembleQuery = searchParameters => {
-  let returnValue = {};
-  if((!!searchParameters) && (!!searchParameters.isbn)) {
-      returnValue._id = searchParameters.isbn;
-  }
-  return returnValue;
-}
+};

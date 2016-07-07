@@ -3,8 +3,24 @@ const testDataSeeder = require('./testDataSeeder');
 const Q = require('q');
 var databaseConnection = undefined;
 
+const validateQueryParameters = (collectionName, query) => {
+  let errorMessageReturnValue = '';
+
+  if (!collectionName && !query) {
+    errorMessageReturnValue = 'No parameters have been specified';
+  } else if (!!collectionName && !query) {
+    errorMessageReturnValue = 'No query was passed as a parameter';
+  } else if (!collectionName && !!query) {
+    errorMessageReturnValue = 'A query has been defined, but there is no collection name';
+  } else if (typeof collectionName !== 'string') {
+    errorMessageReturnValue = 'The collectionName parameter was not a valid String';
+  }
+
+  return errorMessageReturnValue;
+};
+
 exports.connect = config => {
-console.log(config);
+console.log(`config = ${config}`);
   if (!!config) {
     if (!!config.db) {
       MongoClient.connect(config.db, (err, db) => {
@@ -19,19 +35,19 @@ console.log(config);
         }
       });
     } else {
-      throw new Error('The provided Configuration parameter object did not contain the required "db" property')
+      throw new Error('The provided Configuration parameter object did not contain the required "db" property');
     }
   } else {
     throw new Error('No configuration parameter object was provided');
   }
-}
+};
 
 exports.disconnect = () => {
   if (!!databaseConnection) {
     MongoClient.close();
     databaseConnection = undefined;
   }
-}
+};
 
 exports.DatabaseConnection = () => {
   if (!!databaseConnection) {
@@ -39,7 +55,7 @@ exports.DatabaseConnection = () => {
   } else {
     throw new Error('the database is not connected');
   }
-}
+};
 
 exports.FindOne = (collectionName, query) => {
 
@@ -58,7 +74,7 @@ exports.FindOne = (collectionName, query) => {
     }
   });
   return deferred.promise;
-}
+};
 
 
 exports.Find = (collectionName, query) => {
@@ -69,11 +85,11 @@ exports.Find = (collectionName, query) => {
   }
 
   let deferred = Q.defer();
-  let returnDocs = new Array();
+  let returnDocs = [];
   let cursor = databaseConnection.collection(collectionName).find(query);
   cursor.each(function(err, doc) {
     if (!!err) {
-      deferred.reject(new Error(`error reading record: ${Err}`));
+      deferred.reject(new Error(`error reading record: ${err}`));
     } else {
       if (doc !== null) {
         returnDocs.push(doc);
@@ -85,20 +101,4 @@ exports.Find = (collectionName, query) => {
   });
 
   return deferred.promise;
-}
-
-const validateQueryParameters = (collectionName, query) => {
-  let errorMessageReturnValue = '';
-
-  if (!collectionName && !query) {
-    errorMessageReturnValue = 'No parameters have been specified';
-  } else if (!!collectionName && !query) {
-    errorMessageReturnValue = 'No query was passed as a parameter';
-  } else if (!collectionName && !!query) {
-    errorMessageReturnValue = 'A query has been defined, but there is no collection name';
-  } else if (typeof collectionName !== 'string') {
-    errorMessageReturnValue = 'The collectionName parameter was not a valid String';
-  }
-
-  return errorMessageReturnValue;
-}
+};

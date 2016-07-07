@@ -1,0 +1,9 @@
+.container
+  table
+    thead
+      th Title
+      th composer
+    tbody
+      tr(ng-repeat="piece in Pieces")
+        td {{piece.title}}
+        td {{piece.composer}}

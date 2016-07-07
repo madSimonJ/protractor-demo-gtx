@@ -678,12 +678,17 @@ const pieces = [{
 
 exports.reseedDatabase = databaseConnection => {
   console.log('reseeding database');
+  databaseConnection.collection('book').remove({}, (err, results) => {
+      console.log(`removing data from book.  err = ${err}, results count=${results.count}`);
+  });
+  databaseConnection.collection('exam').remove({}, (err, results) => {
+      console.log(`removing data from exam.  err = ${err}, results count=${results.count}`);
+  });
+  databaseConnection.collection('piece').remove({}, (err, results) => {
+      console.log(`removing data from piece.  err = ${err}, results count=${results.count}`);
+  });
 
-  databaseConnection.collection('book').remove();
-  databaseConnection.collection('exam').remove();
-  databaseConnection.collection('piece').remove();
-
-  databaseConnection.collection('book').insertMany(books, (err, booksInserted) => {
+  databaseConnection.collection('book').insertMany(books, (err) => {
     if (!!err) {
       console.log('error inserting books: ' + err);
     } else {
@@ -691,7 +696,7 @@ exports.reseedDatabase = databaseConnection => {
     }
   });
 
-  databaseConnection.collection('piece').insertMany(pieces, (err, piecesInserted) => {
+  databaseConnection.collection('piece').insertMany(pieces, (err) => {
     if (!!err) {
       console.log('error inserting pieces: ' + err);
     } else {
@@ -699,13 +704,11 @@ exports.reseedDatabase = databaseConnection => {
     }
   });
 
-  databaseConnection.collection('exam').insertMany(exams, (err, examsInserted) => {
+  databaseConnection.collection('exam').insertMany(exams, (err) => {
     if (!!err) {
       console.log('error inserting exams: ' + err);
     } else {
       console.log('exam inserted');
     }
   });
-
-
-}
+};

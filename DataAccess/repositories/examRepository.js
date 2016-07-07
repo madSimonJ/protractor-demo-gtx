@@ -5,6 +5,28 @@ const _ = require('lodash');
 
 const examCollectionName = 'exam';
 
+const assembleQuery = (board, instrument, grade) => {
+  var query = {};
+
+  if (!!board) {
+    query.examBoard = board;
+  }
+
+  if (!!instrument) {
+    query.instrument = instrument.toLowerCase();
+  }
+
+  if (!!grade) {
+    if(Array.isArray(grade)) {
+      query.grade = {$in: grade};
+    } else {
+      query.grade = grade;
+    }
+  }
+
+  return query;
+};
+
 exports.getExams = searchParameters => {
 
   if(!searchParameters) {
@@ -39,26 +61,4 @@ exports.getExams = searchParameters => {
       deferred.reject(new Error(`There was an error getting the requested Exam data: ${error.message}`));
     });
   return deferred.promise;
-}
-
-const assembleQuery = (board, instrument, grade) => {
-  var query = {};
-
-  if (!!board) {
-    query.examBoard = board;
-  }
-
-  if (!!instrument) {
-    query.instrument = instrument.toLowerCase();
-  }
-
-  if (!!grade) {
-    if(Array.isArray(grade)) {
-      query.grade = {$in: grade};
-    } else {
-      query.grade = grade;
-    }
-  }
-
-  return query;
-}
+};

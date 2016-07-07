@@ -6,4 +6,4 @@ exports.handlePieceGetRequest = (req, res) => {
     pieceid: req.params.pieceid
   };
   routeResponses.SendDocumentIfFound(req, res, pieceRepository.getPieces(query));
-}
+};
