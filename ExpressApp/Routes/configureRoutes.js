@@ -8,13 +8,11 @@ module.exports = app => {
     
     app.get('/Angular1/*.txt', (req, res) => {
         let filename = path.basename(req.url);
-        console.log(`req = ${filename}`);
        res.sendFile(path.join(commonDirectory, filename)); 
     });
     
     app.get('/Angular1/css/*.css', (req, res) => {
         let filename = path.basename(req.url);
-        console.log(`req = ${filename}`);
        res.sendFile(path.join(commonDirectory, 'css', filename)); 
     });
     

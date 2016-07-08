@@ -6,6 +6,7 @@ import stylus from 'gulp-stylus';
 import cleanCSS from 'gulp-clean-css';
 import sourcemaps from 'gulp-sourcemaps';
 import mocha from 'gulp-mocha';
+import istanbul from 'gulp-istanbul';
 
 gulp.task('copy', ['copy-and-minimise-css'], () => {    
   gulp.src(['./node_modules/bootstrap/dist/css/bootstrap.min*', './node_modules/toastr/build/toastr.min.css*'])  
@@ -74,11 +75,23 @@ gulp.task('webpack-angular1', () => {
     });
 });
 
-gulp.task('test', () => {
+gulp.task('code-coverage', function () {
+  return gulp.src(['Controllers/**/*.js', 'DataAccess/**/*.js', 'ExpressApp/**/*.js'])
+    .pipe(istanbul({
+      includeUntested: true
+    }))
+    .pipe(istanbul.hookRequire());
+});
+
+gulp.task('test', ['code-coverage'], () => {
    
-    return gulp.src(['specs/**/*.js'])
-    .pipe(mocha({reporter: 'nyan'}));
-    
+    return gulp.src(['specs/**/*.js', '!specs/stubs/**'])
+    .pipe(mocha({reporter: 'nyan'}))
+    .pipe(istanbul.writeReports({
+        dir: './coverage',
+        reporters: [ 'lcov', 'json', 'text', 'text-summary' ],
+        reportOpts: { dir: './coverage' }
+  }));
 });
 
 
