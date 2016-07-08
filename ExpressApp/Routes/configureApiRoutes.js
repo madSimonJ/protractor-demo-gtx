@@ -1,7 +1,7 @@
-var examController = require('../../Controllers/examController');
-var bookController = require('../../Controllers/bookController');
-var pieceController = require('../../Controllers/pieceController');
-var routeResponses = require('./routeResponses');
+const examController = require('../../Controllers/examController');
+const bookController = require('../../Controllers/bookController');
+const pieceController = require('../../Controllers/pieceController');
+const routeResponses = require('./routeResponses');
 
 module.exports = app => {
   app.get('/api/exams/:board?/:instrument?/:grade?', examController.handleExamGetRequest);
