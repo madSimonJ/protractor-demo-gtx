@@ -1,52 +1,104 @@
-import chai from 'chai';
 import mockery from 'mockery';
 import {sandbox} from 'sinon';
 
-import createExpressStubs from '../stubs/expressStubs';
-import mockEnvs from '../stubs/mockEnvs';
+import TestHelper from '../../stubs/TestHelper';
+import MongoDbStubCreator from '../../stubs/mongoDbStub';
+import createRouteResponsesStub from '../../stubs/routeResponsesStub';
 
-chai.should();
+TestHelper.SetUpChai();
+
+let bookRepSandbox = sandbox.create();
+let routeResponsesStub = createRouteResponsesStub(bookRepSandbox);
+let mongoDbStub = MongoDbStubCreator.createMongoDbStub(bookRepSandbox);
 
 describe('The DataAccess bookRepository module', () => {
     
-   describe('given a search parameter set with a valid ISBN number', () => {
-      
-       let bookRepositoryModule;
-       
-       before(() => {
-            mockery.enable({
-                warnOnReplace: false,
-                warnOnUnregistered: false
-            });
-            mockery.registerMock('../mongoDBConnector');
-            mockery.registerMock('../../ExpressApp/Routes/routeResponses');
-            mockery.registerAllowable('q');
-            bookRepositoryModule = require('../../DataAccess/bookRepository');
-       });
-       
-        after(() => {
-            mockery.disable();
-            sandbox.verifyAndRestore();
-            sandbox.reset();
-            mockery.deregisterAll();
+   let bookRepositoryModule;
+    
+   before(() => {
+        mockery.enable({
+            warnOnReplace: false,
+            warnOnUnregistered: false
         });
+        mockery.registerMock('../mongoDBConnector', mongoDbStub);
+        mockery.registerMock('../../ExpressApp/Routes/routeResponses', routeResponsesStub);
+        mockery.registerAllowable('q');
+        mockery.registerAllowable('../../../DataAccess/repositories/bookRepository');
+        bookRepositoryModule = require('../../../DataAccess/repositories/bookRepository');
+   });
+
+    after(() => {
+        TestHelper.DeregisterMocks(mockery, bookRepSandbox);
+    });
+    
+   describe('given a search parameter set with a valid ISBN number', () => {
+       
+       let validIsbnNumber = MongoDbStubCreator.IsbnThatWillReturnAValidBookResult;
        
        describe('when getting details of the book', () => {
-          
-           const isbnToQuery = '9781848494923';
+           
+           let bookRepositoryGetBooksPromise;
            
            before(() => {
-               bookRepositoryModule.getBooks({'isbn': isbnToQuery})
-                .then(data => {
-                   
-               });
-               
+               bookRepositoryGetBooksPromise = bookRepositoryModule.getBooks({'isbn': validIsbnNumber});
            });
            
+           after(() => {
+               TestHelper.ResetMocks(bookRepSandbox);
+               mongoDbStub.Find.reset();
+           });
            
+           it('should return a resolving promise that is fulfilled', () => {
+               return bookRepositoryGetBooksPromise.should.be.fulfilled;
+           });
            
+           it('should return a promise that resolves to the expected book data', () => {
+               return bookRepositoryGetBooksPromise.should.eventually.eql(MongoDbStubCreator.validGetBookResult);
+           });
+           
+           it('should query the database', () => {
+               mongoDbStub.Find.should.have.been.calledOnce;
+           });
+           
+           it('should assemble a query to search the book collection in the database', () => {
+               mongoDbStub.Find.should.have.been.calledWith('book');
+           });
+           
+           it('should assemble a query that searches the book collection using the ISBN provided as an ID', () => {
+               mongoDbStub.Find.should.have.been.calledWith('book', MongoDbStubCreator.expectedValidQuery);
+           });
        });
-       
    });
     
+   describe('given an invalid ISBN number', () => {
+      
+        let validIsbnNumber = MongoDbStubCreator.IsbnThatIsInvalid;
+       
+       describe('when getting details of the book', () => {
+           
+           let bookRepositoryGetBooksPromise;
+           
+           before(() => {
+               bookRepositoryGetBooksPromise = bookRepositoryModule.getBooks({'isbn': validIsbnNumber});
+           });
+           
+           after(() => {
+               TestHelper.ResetMocks(bookRepSandbox);
+           });
+        
+           
+           it('should return a resolving promise that is rejected', () => {
+               return bookRepositoryGetBooksPromise.should.eventually.be.rejected;
+           });
+           
+           it('should be rejected with an appropriate error message', () => {
+              return  bookRepositoryGetBooksPromise.should.eventually.be.rejectedWith('The ISBN number provided was not a valid string');
+           });
+           
+           it('should not query the database', () => {
+                mongoDbStub.Find.should.have.not.been.called;
+           });
+           
+       });
+   });
 });
