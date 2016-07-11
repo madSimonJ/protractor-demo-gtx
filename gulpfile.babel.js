@@ -7,6 +7,7 @@ import cleanCSS from 'gulp-clean-css';
 import sourcemaps from 'gulp-sourcemaps';
 import mocha from 'gulp-mocha';
 import istanbul from 'gulp-istanbul';
+import {Server} from 'karma';
 
 gulp.task('copy', ['copy-and-minimise-css'], () => {    
   gulp.src(['./node_modules/bootstrap/dist/css/bootstrap.min*', './node_modules/toastr/build/toastr.min.css*'])  
@@ -85,13 +86,21 @@ gulp.task('code-coverage', function () {
 
 gulp.task('test', ['code-coverage'], () => {
    
-    return gulp.src(['specs/**/*.js', '!specs/stubs/**'])
+    return gulp.src(['specs/**/*.js', '!specs/stubs/**', '!DataAccess/testDataSeeder.js', '!AngularApp/**'])
     .pipe(mocha({reporter: 'nyan'}))
     .pipe(istanbul.writeReports({
         dir: './coverage',
         reporters: [ 'lcov', 'json', 'text', 'text-summary' ],
         reportOpts: { dir: './coverage' }
   }));
+});
+
+
+gulp.task('angular-test', done => {
+      new Server({
+            configFile: path.join(__dirname, 'karma.conf.js'),
+            singleRun: true
+          }, done).start();
 });
 
 
