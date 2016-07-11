@@ -1,59 +1,30 @@
 var webpack = require("webpack");
 
-var configSettings = {
-	"normal": {},
-	"uglified": {
-		plugins: [
-			new webpack.optimize.UglifyJsPlugin()
-		]
-	}
-};
-
 module.exports = config => {
     
   config.set({
       frameworks: ['mocha', 'chai', 'sinon'],
-      // browsers: ['Chrome', 'PhantomJS', 'Firefox', 'IE'],
-      browsers: ['PhantomJS'],
+      browsers: ['Chrome', 'Firefox'],
       basePath: '',
       files: [{
-          pattern: 'node_modules/angular/angular.js',
+          // pattern: 'Build/Angular1/js/app.min.js',
+          pattern: 'AngularApp/app.js',
           included: true,
-          watched: false
-        }, {
-          pattern: 'node_modules/angular-route/angular-route.js',
-          included: true,
-          watched: false
-        }, {
-          pattern: 'node_modules/angular-resource/angular-resource.js',
-          included: true,
-          watched: false
-        }, {
+          watched: true
+      }, {
           pattern: 'node_modules/angular-mocks/angular-mocks.js',
           included: true,
           watched: false
         }, {
-            // pattern: 'Build/Angular1/js/app.js',
-            pattern: 'AngularApp/**/*.js',
-            included: true,
-            watched: true
-        }, {
             pattern: 'specs/AngularAppSpecs/**/*.spec.js',
             included: true,
             watched: true
-        }        
-      ],
+        }],
       preprocessors: {
-        'Build/Angular1/js/app.js': ['coverage', 'webpack']
-      },
-      webpack: {
-		resolve: {
-			extensions: ["", ".js"]
-		}
-      }, webpackMiddleware: {
-		stats: {
-			colors: true
-		}
+        //'specs/AngularAppSpecs/tests.js': ['babel', 'webpack', 'coverage'],
+        // 'Build/Angular1/js/app.min.js': ['webpack'],
+          'AngularApp/app.js': ['webpack', 'coverage']
+        //'specs/AngularAppSpecs/**/*.spec.js': ['babel', 'webpack']
       },
       coverageReporter: {
           dir: 'coverage/angular-test-coverage',
@@ -62,10 +33,27 @@ module.exports = config => {
             subdir: 'report-html'
           }]
       },
-      reporters: ['progress', 'coverage'],
+      reporters: ['spec', 'progress', 'coverage'],
       logLevel: config.LOG_INFO,
       colors: true,
       autoWatch: false,
-      singleRun: true
+      singleRun: true,
+      webpack : {
+             module: {
+                loaders: [{
+                    test: /\.js$/,
+                    loaders: ['ng-annotate', 'babel-loader?{"presets":["es2015"]}'],
+                    exclude: /node_modules/
+                }, {
+                    test: /\.js$/,
+                    include: 'AngularApp/**/*.js',
+                    loader: 'istanbul-instrumenter'
+                }, {
+                    test: /\.pug$/,
+                    loader: 'pug-html-loader'
+                }]
+
+             }
+     }
   });
 };

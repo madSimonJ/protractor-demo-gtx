@@ -45,7 +45,7 @@ describe('The DataAccess bookRepository module', () => {
            
            after(() => {
                TestHelper.ResetMocks(bookRepSandbox);
-               mongoDbStub.Find.reset();
+         //      mongoDbStub.Find.reset();
            });
            
            it('should return a resolving promise that is fulfilled', () => {
@@ -84,7 +84,7 @@ describe('The DataAccess bookRepository module', () => {
            
            after(() => {
                TestHelper.ResetMocks(bookRepSandbox);
-               mongoDbStub.Find.reset();
+             //  mongoDbStub.Find.reset();
            });
         
            
@@ -115,7 +115,7 @@ describe('The DataAccess bookRepository module', () => {
             
             after(() => {
                 TestHelper.ResetMocks(bookRepSandbox);
-                mongoDbStub.Find.reset();
+               // mongoDbStub.Find.reset();
             });
             
             it('should return a promise that is rejected', () => {

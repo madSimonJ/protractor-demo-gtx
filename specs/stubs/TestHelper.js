@@ -10,7 +10,7 @@ const DeregisterMocks = (mockery, collection) => {
 };
 
 const ResetMocks = sandbox => {
-    sandbox.verifyAndRestore();
+    sandbox.verify();
     sandbox.reset();
 };
 

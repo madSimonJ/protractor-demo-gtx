@@ -50,7 +50,7 @@ const expectedMergedBookData = {
         "number": 8,
         "piece_id": "piece8",
         "title": "Exercise in G"
-      },
+      }, 
       {
         "composer": "Oliver Ledbury",
         "number": 9,

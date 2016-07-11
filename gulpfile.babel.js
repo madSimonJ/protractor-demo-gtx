@@ -8,6 +8,7 @@ import sourcemaps from 'gulp-sourcemaps';
 import mocha from 'gulp-mocha';
 import istanbul from 'gulp-istanbul';
 import {Server} from 'karma';
+import karma from 'karma';
 
 gulp.task('copy', ['copy-and-minimise-css'], () => {    
   gulp.src(['./node_modules/bootstrap/dist/css/bootstrap.min*', './node_modules/toastr/build/toastr.min.css*'])  
@@ -41,7 +42,7 @@ gulp.task('angular1-compile-pug-templates', () => {
   .pipe(pug({
     pretty: true
   }))
-   .pipe(gulp.dest('Build/Angular1'))
+   .pipe(gulp.dest('Build/Angular1'));
 });
 
 gulp.task('webpack-angular1', () => {
@@ -86,7 +87,7 @@ gulp.task('code-coverage', function () {
 
 gulp.task('test', ['code-coverage'], () => {
    
-    return gulp.src(['specs/**/*.js', '!specs/stubs/**', '!DataAccess/testDataSeeder.js', '!AngularApp/**'])
+    return gulp.src(['specs/**/*.js', '!specs/stubs/**', '!DataAccess/testDataSeeder.js', '!AngularApp/**', '!specs/AngularAppSpecs/**'])
     .pipe(mocha({reporter: 'nyan'}))
     .pipe(istanbul.writeReports({
         dir: './coverage',
@@ -100,7 +101,11 @@ gulp.task('angular-test', done => {
       new Server({
             configFile: path.join(__dirname, 'karma.conf.js'),
             singleRun: true
-          }, done).start();
+          }, () =>{
+          done();
+      }).start();
+
+    
 });
 
 
