@@ -18,6 +18,7 @@ const getBookDetail = (bookRecord, callbackFunction) => {
     let pieceIdList = _.map(bookRecord.piecesInBook, value => {
         return value.piece_id;
       });
+    
       pieceRepository.getPieceList(pieceIdList)
         .then(data => {
           let pieceRecords = data;
@@ -41,8 +42,6 @@ exports.handleBookGetRequest = (req, res) => {
   bookRepository.getBooks(query)
     .then(data => {
       bookRecord = data;
-      console.log(`query = ${JSON.stringify(query)}`);
-      console.log(`bookRecord = ${JSON.stringify(bookRecord)}`);
       if(!!query.isbn) {
           getBookDetail(bookRecord, (detailedRecord, err) => {
               if(!!err) {
@@ -63,5 +62,6 @@ exports.handleBookGetRequest = (req, res) => {
     .catch(error => {
       deferred.reject(`An error occured fetching details of the Book: "${error.message}"`);
     });
+    
   routeResponses.SendDocumentIfFound(req, res, deferred.promise);
 };

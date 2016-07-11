@@ -1,10 +1,10 @@
-import chai from 'chai';
+import TestHelper from '../../stubs/TestHelper';
 import mockery from 'mockery';
 import {sandbox} from 'sinon';
 
 import createExpressStubs from '../../stubs/expressStubs';
 
-chai.should();
+TestHelper.SetUpChai();
 
 let examControllerStub = {'handleExamGetRequest': {identity: 'examControllerStub'}};
 let bookControllerStub = {'handleBookGetRequest': {identity: 'bookControllerStub'}};
@@ -14,7 +14,8 @@ let stubRouteResponses = {
         identity: 'SendFileNotFoundResponseMock'
     }
 }
-let expressStubs = createExpressStubs(sandbox);
+let apiRouteSandbox = sandbox.create();
+let expressStubs = createExpressStubs(apiRouteSandbox);
 
 describe('The Express app configureApiRoutes module', () => {
    
@@ -37,23 +38,22 @@ describe('The Express app configureApiRoutes module', () => {
         });
         
         after(() => {
-            mockery.disable();
-            sandbox.verifyAndRestore();
-            sandbox.reset();
-            mockery.deregisterAll();
+            TestHelper.DeregisterMocks(mockery, apiRouteSandbox);
         });
         
         describe('when configuring API routes', () => {
             
+            const examRoute = '/api/exams/:board?/:instrument?/:grade?';
+            const bookRoute = '/api/books/:isbn?';
+            const pieceRoute = '/api/pieces/:pieceId?';
+            const defaultRoute = '/api/*';
+            
             it('should configure a set of Get routes', () => {
-                let appGetCallCount = expressStubs.expressAppStub.get.callCount;
-                appGetCallCount.should.equal(3);
+                expressStubs.expressAppStub.get.should.have.been.calledThrice;
             });
             
             it('should configure an exam route', () => {
-                let firstCallToAppGet =  expressStubs.expressAppStub.get.firstCall;
-                let firstRouteConfigured = firstCallToAppGet.args[0];
-                firstRouteConfigured.should.equal('/api/exams/:board?/:instrument?/:grade?');
+                expressStubs.expressAppStub.get.firstCall.should.have.been.calledWith(examRoute);
             });
             
             it('should configure the exam route to call the Exam Controller', () => {
@@ -63,9 +63,7 @@ describe('The Express app configureApiRoutes module', () => {
             });
             
             it('should configure a book route', () => {
-                let secondCallToAppGet =  expressStubs.expressAppStub.get.secondCall;
-                let secondRouteConfigured = secondCallToAppGet.args[0];
-                secondRouteConfigured.should.equal('/api/books/:isbn?');
+                expressStubs.expressAppStub.get.secondCall.should.have.been.calledWith(bookRoute);
             });
             
             it('should configure the exam route to call the Exam Controller', () => {
@@ -75,9 +73,7 @@ describe('The Express app configureApiRoutes module', () => {
             });
             
             it('should configure a piece route', () => {
-                let thirdCallToAppGet =  expressStubs.expressAppStub.get.thirdCall;
-                let thirdRouteConfigured = thirdCallToAppGet.args[0];
-                thirdRouteConfigured.should.equal('/api/pieces/:pieceId?');
+                expressStubs.expressAppStub.get.thirdCall.should.have.been.calledWith(pieceRoute);
             });
             
             it('should configure the exam route to call the Piece Controller', () => {
@@ -87,14 +83,11 @@ describe('The Express app configureApiRoutes module', () => {
             });
             
             it('should create a single route that matches all verbs', () => {
-               let appAllCalledOnce = expressStubs.expressAppStub.all.calledOnce;
-                appAllCalledOnce.should.be.true;
+                expressStubs.expressAppStub.all.should.have.been.calledOnce;
             });
             
             it('should configure the all verb route to match all unknown api calls', () => {
-                let callToAppAll = expressStubs.expressAppStub.all.firstCall;
-                let fallbackApiRoute = callToAppAll.args[0];
-                fallbackApiRoute.should.equal('/api/*');
+                expressStubs.expressAppStub.all.should.have.been.calledWith(defaultRoute);
             });
             
             it('should configure the route for all unknown api calls to send a FileNotFound response', () => {

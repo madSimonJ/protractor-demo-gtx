@@ -2,9 +2,6 @@ import sinon from 'sinon';
 import q from 'q';
 import _ from 'lodash';
 
-const IdValueThatCausesTheDbToThrowAnError = 'this-causes-an-error';
-const ExpectedDatabaseErrorMessage = 'a nasty error has occured';
-
 const validGetBookResult = [{
   _id: '9781848494923',
   title: 'Flute Exam Pieces, Grade 1 (2014-2017)',
@@ -69,40 +66,32 @@ const validGetBookResult = [{
   }]
 }];
 
+
+const ValidIsbnNumber = _.first(validGetBookResult)._id;
+
 const expectedValidQuery = {
-    _id: validGetBookResult[0]._id
+    'isbn': ValidIsbnNumber
 };
 
+const InvalidIsbnNumber = 9781848494923;
 
-const createMongoDbStub = sandbox => {
-    let mongoDbStub = sandbox.stub();
-    mongoDbStub.withArgs(
-        sinon.match('book'), 
-        sinon.match.has('_id', expectedValidQuery._id))
-    .returns(q.resolve([_.first(validGetBookResult)]));
+
+const createBookRepositoryStub = sandbox => {
+  
+    let getBookStub = sandbox.stub();
     
-    mongoDbStub.withArgs(
-        sinon.match(sinon.match.string),
-        sinon.match.has('_id', IdValueThatCausesTheDbToThrowAnError))
-    .returns(q.reject(new Error(ExpectedDatabaseErrorMessage)));
+    getBookStub.withArgs(
+        sinon.match.has('isbn', ValidIsbnNumber))
+        .returns(q.resolve(_.first(validGetBookResult)));
     
-    mongoDbStub.withArgs(
-        sinon.match('book'),
-        sinon.match({}))
-    .returns(q.resolve(validGetBookResult));
-    
-    return {'Find': mongoDbStub
+    return {
+        getBooks: getBookStub
     };
 };
 
-
 module.exports = {
-    'createMongoDbStub': createMongoDbStub,
-    'validGetBookResult': _.first(validGetBookResult),
-    'IsbnThatWillReturnAValidBookResult': '9781848494923',
-    'ListAllBooksResult': validGetBookResult,
-    'IdValueThatCausesTheDbToThrowAnError': IdValueThatCausesTheDbToThrowAnError,
+    'createBookRepositoryStub': createBookRepositoryStub,
     'expectedValidQuery': expectedValidQuery,
-    'IsbnThatIsInvalid': 9781848494923,
-    'ExpectedDatabaseErrorMessage': ExpectedDatabaseErrorMessage
+    'ValidIsbnNumber': ValidIsbnNumber,
+    'InvalidIsbnNumber': InvalidIsbnNumber
 };

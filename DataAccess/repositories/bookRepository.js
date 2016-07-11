@@ -5,6 +5,7 @@ const bookCollectionName = 'book';
 
 const assembleQuery = searchParameters => {
   let returnValue = {};
+
   if((!!searchParameters) && (!!searchParameters.isbn)) {
       returnValue._id = searchParameters.isbn;
   }

@@ -34,13 +34,13 @@ describe('The DataAccess bookRepository module', () => {
    describe('given a search parameter set with a valid ISBN number', () => {
        
        let validIsbnNumber = MongoDbStubCreator.IsbnThatWillReturnAValidBookResult;
-       
        describe('when getting details of the book', () => {
            
            let bookRepositoryGetBooksPromise;
            
            before(() => {
-               bookRepositoryGetBooksPromise = bookRepositoryModule.getBooks({'isbn': validIsbnNumber});
+               let query = {'isbn': validIsbnNumber};
+               bookRepositoryGetBooksPromise = bookRepositoryModule.getBooks(query);
            });
            
            after(() => {
@@ -84,6 +84,7 @@ describe('The DataAccess bookRepository module', () => {
            
            after(() => {
                TestHelper.ResetMocks(bookRepSandbox);
+               mongoDbStub.Find.reset();
            });
         
            
@@ -98,7 +99,70 @@ describe('The DataAccess bookRepository module', () => {
            it('should not query the database', () => {
                 mongoDbStub.Find.should.have.not.been.called;
            });
-           
        });
    });
+    
+    describe('given an error occuring in the database', () => {
+       
+        describe('when getting details of a book', () => {
+        
+            let IsbnToQuery = MongoDbStubCreator.IdValueThatCausesTheDbToThrowAnError;
+            let bookRepositoryGetBooksPromise;
+            
+            before(() => {
+                bookRepositoryGetBooksPromise = bookRepositoryModule.getBooks({'isbn': IsbnToQuery});
+            });
+            
+            after(() => {
+                TestHelper.ResetMocks(bookRepSandbox);
+                mongoDbStub.Find.reset();
+            });
+            
+            it('should return a promise that is rejected', () => {
+                return bookRepositoryGetBooksPromise.should.eventually.be.rejected;
+            });
+            
+            it('should be rejected with a message containing the error from the database', () => {
+               return bookRepositoryGetBooksPromise.should.eventually.be.rejectedWith(`There was an error getting the requested Exam data: ${MongoDbStubCreator.ExpectedDatabaseErrorMessage}`);
+            });
+        });
+        
+    });
+    
+    describe('given no search parameters', () => {
+       
+        describe('when searching for book details', () => {
+            
+            let bookRepositoryGetBooksPromise;
+            
+            before(() => {
+                bookRepositoryGetBooksPromise = bookRepositoryModule.getBooks({});
+            });
+            
+            after(() => {
+                TestHelper.ResetMocks(bookRepSandbox);
+                mongoDbStub.Find.reset();
+            });
+            
+            it('should return a resolved promise that is fulfilled', () => {
+                return bookRepositoryGetBooksPromise.should.eventually.be.reolved;
+            });
+            
+            it('should return a list of all books', () => {
+               return bookRepositoryGetBooksPromise.should.eventually.eql(MongoDbStubCreator.ListAllBooksResult); 
+            });
+            
+           it('should query the database', () => {
+               mongoDbStub.Find.should.have.been.calledOnce;
+           });
+           
+           it('should assemble a query to search the book collection in the database', () => {
+               mongoDbStub.Find.should.have.been.calledWith('book');
+           });
+           
+           it('should assemble a query that searches the book collection using the ISBN provided as an ID', () => {
+               mongoDbStub.Find.should.have.been.calledWith('book', {});
+           });
+        });
+    });
 });

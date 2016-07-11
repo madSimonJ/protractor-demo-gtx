@@ -1,13 +1,14 @@
-import chai from 'chai';
+import TestHelper from '../../stubs/TestHelper';
 import mockery from 'mockery';
 import {sandbox} from 'sinon';
 import path from 'path';
 
 import createExpressStubs from '../../stubs/expressStubs';
+let configureRouteSandbox = sandbox.create();
 
-chai.should();
+TestHelper.SetUpChai();
 
-let expressStubs = createExpressStubs(sandbox);
+let expressStubs = createExpressStubs(configureRouteSandbox);
 
 describe('The Express app configureRoutes module', () => {
    
@@ -33,45 +34,35 @@ describe('The Express app configureRoutes module', () => {
         });
         
         after(() => {
-            mockery.disable();
-            sandbox.verifyAndRestore();
-            sandbox.reset();
-            mockery.deregisterAll();
+            TestHelper.DeregisterMocks(mockery, configureRouteSandbox);
         });
         
         describe('when configuring routes', () => {
             
+            const angular1TxtRoute = '/Angular1/*.txt';
+            const angular1CssRoute = '/Angular1/css/*.css';
+            const angular1AppMinJsRoute = '/Angular1/js/app.min.js';
+            const angular1DefaultRoute = '/Angular1*';
+            
             it('should configure a set of Get routes', () => {
-                let appGetCallCount = expressStubs.expressAppStub.get.callCount;
-                appGetCallCount.should.equal(4);
+                expressStubs.expressAppStub.get.should.have.callCount(4);
             });
             
             it('should configure a route for text files in the Angular1 app', () => {
-                let firstCallToAppGet =  expressStubs.expressAppStub.get.firstCall;
-                let firstRouteConfigured = firstCallToAppGet.args[0];
-                firstRouteConfigured.should.equal('/Angular1/*.txt');
+                expressStubs.expressAppStub.get.firstCall.should.have.been.calledWith(angular1TxtRoute);
             });
             
             it('should configure a route for CSS files in the Angular1 app', () => {
-                let secondCallToAppGet =  expressStubs.expressAppStub.get.secondCall;
-                let firstRouteConfigured = secondCallToAppGet.args[0];
-                firstRouteConfigured.should.equal('/Angular1/css/*.css');
+                expressStubs.expressAppStub.get.secondCall.should.have.been.calledWith(angular1CssRoute);
             });
             
             it('should configure a route for the app.js file in the Angular1 app', () => {
-                let thirdCallToAppGet =  expressStubs.expressAppStub.get.thirdCall;
-                let thirdRouteConfigured = thirdCallToAppGet.args[0];
-                thirdRouteConfigured.should.equal('/Angular1/js/app.min.js');
+                expressStubs.expressAppStub.get.thirdCall.should.have.been.calledWith(angular1AppMinJsRoute);
             });
             
             it('should configure a route for all other paths in the Angular1 app', () => {
-                let fourthCallToAppGet =  expressStubs.expressAppStub.get.getCall(3);
-                let fourthRouteConfigured = fourthCallToAppGet.args[0];
-                fourthRouteConfigured.should.equal('/Angular1*');
+                expressStubs.expressAppStub.get.getCall(3).should.have.been.calledWith(angular1DefaultRoute);
             });
-            
-            
-            
         });
         
         describe('when the browser requests a text file in the Angular1 app', () => {

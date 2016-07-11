@@ -1,19 +1,19 @@
-import chai from 'chai';
+import TestHelper from '../stubs/TestHelper';
 import mockery from 'mockery';
 import {sandbox} from 'sinon';
 
 import createExpressStubs from '../stubs/expressStubs';
 import mockEnvs from '../stubs/mockEnvs';
 
-chai.should();
+TestHelper.SetUpChai();
 
-let middlewareConfigStub = sandbox.stub();
-let configureApiRoutesStub = sandbox.stub();
-let configureAngular1RoutesStub = sandbox.stub();
-let dbConfigStub = {identity: 'dbConfigStub', connect: sandbox.stub()};
-//let resStub = {identity: 'resStub', sendStatus: sandbox.stub()};
-//let reqStub = {identity: 'reqStub'};
-let expressStubs = createExpressStubs(sandbox);
+let configureRouteSandbox = sandbox.create();
+
+let middlewareConfigStub = configureRouteSandbox.stub();
+let configureApiRoutesStub = configureRouteSandbox.stub();
+let configureAngular1RoutesStub = configureRouteSandbox.stub();
+let dbConfigStub = {identity: 'dbConfigStub', connect: configureRouteSandbox.stub()};
+let expressStubs = createExpressStubs(configureRouteSandbox);
 
 const env = mockEnvs.mockEnv;
 
@@ -38,10 +38,7 @@ describe('The Express app createExpressApp module', () => {
         });
         
         after(() => {
-            mockery.disable();
-            sandbox.verifyAndRestore();
-            sandbox.reset();
-            mockery.deregisterAll();
+            TestHelper.DeregisterMocks(mockery, configureRouteSandbox);
         });
         
         describe('when calling the SetUp function', () => {
@@ -55,18 +52,15 @@ describe('The Express app createExpressApp module', () => {
             });
             
             after(() => {
-                sandbox.verifyAndRestore();
-                sandbox.reset();
+                TestHelper.ResetMocks(configureRouteSandbox);
             });
             
             it('should create a new express app', () => {
-                let expressWasCalledOnce = expressStubs.expressStub.calledOnce;
-                expressWasCalledOnce.should.be.true;
+                expressStubs.expressStub.should.have.been.calledOnce;
             });
             
             it('should call middlewareConfig', () => {
-                let middlewareConfigWasCalledOnce = middlewareConfigStub.calledOnce;
-                middlewareConfigWasCalledOnce.should.be.true;
+                middlewareConfigStub.should.have.been.calledOnce;
             });
             
             it('should pass the Express app to MiddlewareConfig', () => {
@@ -94,25 +88,19 @@ describe('The Express app createExpressApp module', () => {
             });
             
             it('should set up a route', () => {
-                let expressGetCalledOnce = expressStubs.expressAppStub.get.calledOnce;
-                expressGetCalledOnce.should.be.true;
+                expressStubs.expressAppStub.get.should.have.been.calledOnce;
             });
             
             it('should set up a route that matches all paths', function() {
-               let callToExpressGet = expressStubs.expressAppStub.get.firstCall;
-               let specifiedRoutePath = callToExpressGet.args[0];
-               specifiedRoutePath.should.equal('*');
+                expressStubs.expressAppStub.get.firstCall.should.have.been.calledWith('*');
             });
             
             it('should set up a route that returns a status to the browser', () => {
-                let responseSendStatusWasCalledOnce = expressStubs.resStub.sendStatus.calledOnce;
-                responseSendStatusWasCalledOnce.should.be.true;
+                expressStubs.resStub.sendStatus.should.have.been.calledOnce;
             });
             
             it('should set up a route that returns a "file not found" status to the browser', () => {
-                let callToResSendStatus = expressStubs.resStub.sendStatus.firstCall;
-                let statusReturnedToBrowser = callToResSendStatus.args[0];
-                statusReturnedToBrowser.should.equal(404);
+                expressStubs.resStub.sendStatus.firstCall.should.have.been.calledWith(404);
             });
         });
         
@@ -123,15 +111,11 @@ describe('The Express app createExpressApp module', () => {
             });
             
             after(() => {
-                mockery.disable();
-                sandbox.verifyAndRestore();
-                sandbox.reset();
-                mockery.deregisterAll();
+                TestHelper.DeregisterMocks(mockery, configureRouteSandbox);
             });
             
             it('should connect to the database', () => {
-                let dbConfigConnectCalledOnce = dbConfigStub.connect.calledOnce;
-                dbConfigConnectCalledOnce.should.be.true;
+                dbConfigStub.connect.should.have.been.calledOnce;
             });
             
             it('should pass environment variables to the database config module', () => {
@@ -141,14 +125,11 @@ describe('The Express app createExpressApp module', () => {
             });
             
             it('should start the app listening for incoming requests', () => {
-                let expressAppListenCalledOnce = expressStubs.expressAppStub.listen.calledOnce;
-                expressAppListenCalledOnce.should.be.true;
+                expressStubs.expressAppStub.listen.should.have.been.calledOnce;
             });
             
             it('should listen on port 8080', function() {
-                let callToAppStubListen = expressStubs.expressAppStub.listen.firstCall;
-                let portAppIsListeningOn = callToAppStubListen.args[0];
-                portAppIsListeningOn.should.equal(8080);
+                expressStubs.expressAppStub.listen.firstCall.should.have.been.calledWith(8080);
             });
         });
     });

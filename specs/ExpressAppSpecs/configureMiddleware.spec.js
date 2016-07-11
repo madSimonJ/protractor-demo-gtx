@@ -1,14 +1,15 @@
-import chai from 'chai';
+import TestHelper from '../stubs/TestHelper';
 import mockery from 'mockery';
 import {sandbox} from 'sinon';
 
 import createExpressStubs from '../stubs/expressStubs';
 import mockEnvs from '../stubs/mockEnvs';
 
-chai.should();
+TestHelper.SetUpChai();
 
-let expressStubs = createExpressStubs(sandbox);
-let morganStub = sandbox.stub().returns({'identity': 'morganStub'});
+let configureMiddlewareSandbox = sandbox.create();
+let expressStubs = createExpressStubs(configureMiddlewareSandbox);
+let morganStub = configureMiddlewareSandbox.stub().returns({'identity': 'morganStub'});
 
 describe('The Express app createExpressApp module', () => {
 
@@ -28,26 +29,19 @@ describe('The Express app createExpressApp module', () => {
         });
         
         after(() => {
-            mockery.disable();
-            sandbox.verifyAndRestore();
-            sandbox.reset();
-            mockery.deregisterAll();
+            TestHelper.DeregisterMocks(mockery, configureMiddlewareSandbox);
         });
         
         it('should configure a middleware', function() {
-            let expressUseCalledOnce = expressStubs.expressAppStub.use.calledOnce;
-            expressUseCalledOnce.should.be.true;
+            expressStubs.expressAppStub.use.should.have.been.calledOnce;
         });
         
         it('should configure morgan', () => {
-           let morganCalledOnce = morganStub.calledOnce;
-            morganCalledOnce.should.be.true;
+           morganStub.should.have.been.calledOnce;
         });
         
         it('should configure morgan in Dev mode', () => {
-            let callToMorgan = morganStub.firstCall;
-            let morganMode = callToMorgan.args[0];
-            morganMode.should.equal('dev');
+            morganStub.should.have.been.calledWith('dev');
         });
         
         it('should set morgan as a middleware', () => {
