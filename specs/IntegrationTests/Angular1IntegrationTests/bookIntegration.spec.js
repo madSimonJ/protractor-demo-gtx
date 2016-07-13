@@ -72,7 +72,7 @@ describe('the book index page', () => {
         });
         
         it('should load the detail page for the selected book', () => {
-           expect(browser.getLocationAbsUrl()).to.eventually.equal('http://localhost:8080/books/9781848494923');
+           expect(browser.getLocationAbsUrl()).to.eventually.equal('/angular1/books/9781848494923');
         });
     });
 });

@@ -11,7 +11,6 @@ export default app => {
         $scope.Books = bookFactory.query();
       }
     });
-    
 };
 
 
