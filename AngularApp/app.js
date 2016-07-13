@@ -1,5 +1,3 @@
-var x = 1;
-
 import angular from 'angular';
 
 import uiRouter from 'angular-route';

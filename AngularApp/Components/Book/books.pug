@@ -8,7 +8,8 @@
         th Publication Date
     tbody
       tr(ng-repeat="book in Books")
-        td {{book.title}}
+        td
+            a(href='/angular1/books/{{book.isbn13}}' class='bookDetailLink') {{book.title}}
         td {{book.isbn13}}
         td {{book.publisher}}
         td {{book.publicationDate}}

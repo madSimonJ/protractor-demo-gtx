@@ -6,7 +6,8 @@
   "scripts": {
     "test": "gulp test",
     "prestart": "gulp build",
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "protractor": "cd StartupScripts && ProtractorStartup.cmd"
   },
   "author": "Simon J. Painter",
   "license": "ISC",
@@ -66,6 +67,7 @@
     "sinon-chai": "^2.8.0",
     "stylus": "^0.54.5",
     "vinyl-source-stream": "^1.1.0",
+    "webdriver-manager": "^10.2.1",
     "webpack": "^1.13.1"
   }
 }

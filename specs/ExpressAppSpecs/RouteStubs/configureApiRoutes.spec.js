@@ -13,7 +13,7 @@ let stubRouteResponses = {
     SendFileNotFoundResponse: {
         identity: 'SendFileNotFoundResponseMock'
     }
-}
+};
 let apiRouteSandbox = sandbox.create();
 let expressStubs = createExpressStubs(apiRouteSandbox);
 
