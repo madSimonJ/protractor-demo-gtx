@@ -1,3 +1,5 @@
+'use strict';
+
 import gulp from 'gulp';
 import webpack from 'webpack';
 import path from 'path';
@@ -9,6 +11,7 @@ import mocha from 'gulp-mocha';
 import istanbul from 'gulp-istanbul';
 import {Server} from 'karma';
 import karma from 'karma';
+import {protractor} from 'gulp-protractor';
 
 gulp.task('copy', ['copy-and-minimise-css'], () => {    
   gulp.src(['./node_modules/bootstrap/dist/css/bootstrap.min*', './node_modules/toastr/build/toastr.min.css*'])  
@@ -87,7 +90,7 @@ gulp.task('code-coverage', function () {
 
 gulp.task('test', ['code-coverage'], () => {
    
-    return gulp.src(['specs/**/*.js', '!specs/stubs/**', '!DataAccess/testDataSeeder.js', '!AngularApp/**', '!specs/AngularAppSpecs/**'])
+    return gulp.src(['specs/**/*.js', '!specs/stubs/**', '!DataAccess/testDataSeeder.js', '!AngularApp/**', '!specs/AngularAppSpecs/**', '!specs/IntegrationTests/**' ])
     .pipe(mocha({reporter: 'nyan'}))
     .pipe(istanbul.writeReports({
         dir: './coverage',
@@ -108,6 +111,18 @@ gulp.task('angular-test', done => {
     
 });
 
+
+gulp.task('protractor', () => {
+    gulp.src(['./specs/IntegrationTests/**/*.js'])
+        .pipe(protractor({
+            configFile: 'protractor.conf.js',
+            args: ['--baseUrl', 'http://127.0.0.1:8080'],
+            seleniumServerJar: 'C:\Users\simon.painter\Documents\Code\protractor-demo-gtx\node_modules\protractor\node_modules\webdriver-manager\selenium\selenium-server-standalone-2.53.1.jar'
+    }))
+    .on('error', e => {
+        throw e;
+    })
+});
 
 gulp.task('build', ['copy', 'compile-stylus-templates', 'build-apps'], () => {
   // return gulp.src('./output/index.htm')

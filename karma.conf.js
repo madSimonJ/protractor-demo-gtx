@@ -4,7 +4,7 @@ module.exports = config => {
     
   config.set({
       frameworks: ['mocha', 'chai', 'sinon'],
-      browsers: ['Chrome', 'Firefox'],
+      browsers: ['Firefox', 'Chrome'],
       basePath: '',
       files: [{
           // pattern: 'Build/Angular1/js/app.min.js',

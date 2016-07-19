@@ -39,6 +39,7 @@
     "gulp-istanbul": "^1.0.0",
     "gulp-load-plugins": "^1.2.4",
     "gulp-mocha": "^2.2.0",
+    "gulp-protractor": "^2.4.0",
     "gulp-pug": "^3.0.3",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-stylus": "^2.5.0",
@@ -61,13 +62,12 @@
     "mockery": "^1.7.0",
     "ng-annotate": "^1.2.1",
     "ng-annotate-loader": "^0.1.0",
-    "protractor": "^3.3.0",
+    "protractor": "^4.0.0",
     "pug-html-loader": "^1.0.8",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0",
     "stylus": "^0.54.5",
     "vinyl-source-stream": "^1.1.0",
-    "webdriver-manager": "^10.2.1",
     "webpack": "^1.13.1"
   }
 }

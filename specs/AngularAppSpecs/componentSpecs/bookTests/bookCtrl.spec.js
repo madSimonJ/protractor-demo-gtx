@@ -1,3 +1,5 @@
+'use strict';
+
 describe('The Book Controller', () => {
 
   let bookCtrlSandbox = sinon.sandbox.create();  
